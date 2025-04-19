@@ -16,6 +16,7 @@
       "form_creation_failed": "Form creation failed. Please check the input.",
       "form_update_failed": "Form update failed. Please check the input.",
       "form_not_found" : "Form not found. Please check the form ID.",
-      "invalid_objectid": "The provided Form ID is not a valid ObjectId."
+      "invalid_objectid": "The provided Form ID is not a valid ObjectId.",
+      "file_upload_failed": "File upload failed. Please check the file again "
     }
 }
