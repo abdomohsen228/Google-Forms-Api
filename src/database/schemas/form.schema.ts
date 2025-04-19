@@ -45,6 +45,11 @@ export class Form extends Document {
     type: [
       {
         submittedAt: { type: Date, default: Date.now },
+        submittedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+          required: true,
+        },
         answers: [
           {
             questionId: { type: mongoose.Schema.Types.ObjectId },

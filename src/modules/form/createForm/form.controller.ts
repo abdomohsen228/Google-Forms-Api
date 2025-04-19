@@ -21,7 +21,7 @@ import { AuthGuard } from 'src/modules/auth/guards/auth.guards';
 export class formController {
   constructor(private readonly formService: FormService) {}
   @Post('')
-  createForm(
+  public createForm(
     @CurrentUser() userPayload: jwtPayload,
     @Body() createFormDto: CreateFormDto,
   ) {
@@ -29,7 +29,7 @@ export class formController {
   }
 
   @Get('')
-  async getForms(
+  public async getForms(
     @CurrentUser() userPayload: jwtPayload,
     @Query('page') page = 1,
     @Query('limit') limit = 2,
@@ -38,7 +38,7 @@ export class formController {
   }
 
   @Get(':formId')
-  getFormById(
+  public getFormById(
     @CurrentUser() userPayload: jwtPayload,
     @Param('formId') formId: string,
   ) {
@@ -46,7 +46,7 @@ export class formController {
   }
 
   @Patch(':formId')
-  updateFormById(
+  public updateFormById(
     @CurrentUser() userPayload: jwtPayload,
     @Param('formId') formId: string,
     @Body() updateFormDto: UpdateFormDto,
@@ -55,7 +55,7 @@ export class formController {
   }
 
   @Delete(':formId')
-  deleteFormById(
+  public deleteFormById(
     @CurrentUser() userPayload: jwtPayload,
     @Param('formId') formId: string,
   ) {
