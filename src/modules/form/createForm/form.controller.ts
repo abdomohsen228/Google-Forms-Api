@@ -31,8 +31,8 @@ export class formController {
   @Get('')
   async getForms(
     @CurrentUser() userPayload: jwtPayload,
-    @Query('page') page,
-    @Query('limit') limit,
+    @Query('page') page = 1,
+    @Query('limit') limit = 2,
   ) {
     return this.formService.getFormsByUser(userPayload, page, limit);
   }
