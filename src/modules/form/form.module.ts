@@ -6,6 +6,8 @@ import { Form, FormSchema } from 'src/database/schemas/form.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user/user.module';
+import { SubmitformController } from './submitForm/submitForm.controller';
+import { SubmitFormService } from './submitForm/submitForm.service';
 
 @Module({
   imports: [
@@ -14,8 +16,8 @@ import { UserModule } from '../user/user.module';
     AuthModule,
     UserModule,
   ],
-  providers: [FormService],
-  controllers: [formController],
+  providers: [FormService, SubmitFormService],
+  controllers: [formController, SubmitformController],
   exports: [FormService],
 })
 export class FormModule {}
