@@ -12,6 +12,7 @@ import { UpdateFormDto } from '../dtos/updateForm.dto';
 import successMessage from 'src/config/successMessages.json';
 import errorMessages from 'src/config/errorMessages.json';
 import { QuestionType } from 'src/database/enums/questoinType.enum';
+import { nanoid } from 'nanoid';
 
 @Injectable()
 export class FormService {
@@ -26,7 +27,6 @@ export class FormService {
         settings: {},
         order: 0,
       };
-
       const updatedQuestions = createFormDto.questions.map((q, index) => ({
         ...q,
         order: index + 1,
@@ -34,12 +34,18 @@ export class FormService {
 
       const form = new this.formModel({
         ...createFormDto,
+        GeneratedFormId: nanoid(10),
         questions: [emailQuestion, ...updatedQuestions],
         ownerId: userPayload.id,
       });
 
       await form.save();
-      return { message: successMessage.form.success_create, form };
+
+      return {
+        message: successMessage.form.success_create,
+        GeneratedFormId: form.GeneratedFormId,
+        form,
+      };
     } catch (error) {
       throw new BadRequestException(
         errorMessages.form_errors.form_creation_failed,
@@ -76,25 +82,22 @@ export class FormService {
     };
   }
 
-  async getFormById(userPayload: jwtPayload, formId: string) {
-    this.validateObjectId(formId);
-
-    const form = await this.validateForm(userPayload, formId);
+  async getFormById(userPayload: jwtPayload, GeneratedFormId: string) {
+    await this.validateForm(userPayload, GeneratedFormId);
+    const form = await this.validateForm(userPayload, GeneratedFormId);
     return form;
   }
 
   async updateFormById(
     userPayload: jwtPayload,
-    formId: string,
+    GeneratedFormId: string,
     dto: UpdateFormDto,
   ) {
-    this.validateObjectId(formId);
-
-    await this.validateForm(userPayload, formId);
+    await this.validateForm(userPayload, GeneratedFormId);
 
     try {
       return this.formModel.findOneAndUpdate(
-        { _id: formId, ownerId: userPayload.id },
+        { GeneratedFormId, ownerId: userPayload.id },
         { $set: dto },
         { new: true },
       );
@@ -105,22 +108,17 @@ export class FormService {
     }
   }
 
-  async deleteFormById(userPayload: jwtPayload, formId: string) {
-    this.validateObjectId(formId);
-
-    await this.validateForm(userPayload, formId);
+  async deleteFormById(userPayload: jwtPayload, GeneratedFormId: string) {
+    const form = await this.validateForm(userPayload, GeneratedFormId);
+    await this.formModel.deleteOne({
+      GeneratedFormId,
+      ownerId: userPayload.id,
+    });
     return { message: successMessage.form.success_delete };
   }
-
-  private validateObjectId(formId: string) {
-    if (!Types.ObjectId.isValid(formId)) {
-      throw new BadRequestException(errorMessages.form_errors.invalid_objectid);
-    }
-  }
-
-  private async validateForm(userPayload: jwtPayload, formId: string) {
+  private async validateForm(userPayload: jwtPayload, GeneratedFormId: string) {
     const form = await this.formModel.findOne({
-      _id: formId,
+      GeneratedFormId,
       ownerId: userPayload.id,
     });
     if (!form) {

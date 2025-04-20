@@ -18,18 +18,20 @@ export class SubmitFormService {
     private formModel: Model<FormDocument>,
   ) {}
 
-  async submitForm(
-    formId: string,
-    userPayload: jwtPayload,
-    submitFormDto: SubmitFormDto,
-  ) {
-    const form = await this.formModel.findById(formId);
-    if (!form)
+  async submitForm(generatedFormId: string, submitFormDto: SubmitFormDto) {
+    const form = await this.formModel.findOne({
+      GeneratedFormId: generatedFormId,
+    });
+
+    if (!form) {
       throw new NotFoundException(errorMessages.form_errors.form_not_found);
+    }
 
     const emailAnswer = submitFormDto.answers[0]?.answerText;
     if (!emailAnswer) {
-      throw new BadRequestException('Email is required as the first question.');
+      throw new BadRequestException(
+        errorMessages.form_errors.email_is_requierd,
+      );
     }
 
     const alreadySubmitted = form.submissions.some(
@@ -48,6 +50,7 @@ export class SubmitFormService {
         const answer = submitFormDto.answers.find(
           (a) => a.questionId === question._id.toString(),
         );
+
         if (!answer) {
           throw new BadRequestException(
             `${errorMessages.form_errors.filed_is_required} ${question._id}`,
@@ -89,18 +92,21 @@ export class SubmitFormService {
 
     return {
       message: successMessage.form.success_submission,
+      formId: form.GeneratedFormId,
     };
   }
 
   async getAllSubmissionsForForm(
-    formId: string,
+    generatedFormId: string,
     userPayload: jwtPayload,
     page: number = 1,
     limit: number = 5,
   ) {
     const skip = (page - 1) * limit;
 
-    const form = await this.formModel.findById(formId);
+    const form = await this.formModel.findOne({
+      GeneratedFormId: generatedFormId,
+    });
     if (!form) {
       throw new NotFoundException(errorMessages.form_errors.form_not_found);
     }
@@ -134,32 +140,6 @@ export class SubmitFormService {
       limit,
       totalSubmissions,
       totalPages: Math.ceil(totalSubmissions / limit),
-    };
-  }
-
-  async getCreatedFormsByUser(
-    userPayload: jwtPayload,
-    page: number = 1,
-    limit: number = 5,
-  ) {
-    const skip = (page - 1) * limit;
-
-    const forms = await this.formModel
-      .find({ ownerId: new Types.ObjectId(userPayload.id) })
-      .skip(skip)
-      .limit(limit)
-      .select('title description isPublic');
-
-    const totalForms = await this.formModel.countDocuments({
-      ownerId: new Types.ObjectId(userPayload.id),
-    });
-
-    return {
-      createdForms: forms,
-      page,
-      limit,
-      totalForms,
-      totalPages: Math.ceil(totalForms / limit),
     };
   }
 }
