@@ -23,24 +23,15 @@ export class SubmitformController {
   constructor(private readonly submitformService: SubmitFormService) {}
 
   @Post(':formId/submit')
-  @UseInterceptors(
-    FileFieldsInterceptor([], {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, cb) => {
-          const ext = path.extname(file.originalname);
-          cb(null, `${uuidv4()}${ext}`);
-        },
-      }),
-      limits: { fileSize: 5 * 1024 * 1024 },
-    }),
-  )
-  public async submitForm(
+  public submitForm(
     @Param('formId') formId: string,
-    @Body() dto: SubmitFormDto,
-    @UploadedFiles() files: { [fieldname: string]: Express.Multer.File[] },
+    @Body() submitFormDto: SubmitFormDto,
     @CurrentUser() userPayload: jwtPayload,
   ) {
-    return this.submitformService.submitForm(formId, userPayload, dto, files);
+    return this.submitformService.submitForm(
+      formId,
+      userPayload,
+      submitFormDto,
+    );
   }
 }

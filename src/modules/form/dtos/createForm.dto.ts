@@ -1,4 +1,11 @@
-import { IsArray, IsBoolean, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 import { CreateQuestionDto } from './createFormQuestions.dto';
 
 export class CreateFormDto {
@@ -16,5 +23,7 @@ export class CreateFormDto {
 
   @IsOptional()
   @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateQuestionDto)
   questions?: CreateQuestionDto[];
 }

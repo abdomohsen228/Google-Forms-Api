@@ -20,6 +20,7 @@ export class Form extends Document {
   @Prop({
     type: [
       {
+        _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
         type: {
           type: String,
           required: true,
@@ -45,17 +46,15 @@ export class Form extends Document {
     type: [
       {
         submittedAt: { type: Date, default: Date.now },
-        submittedBy: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'User',
-          required: true,
-        },
+        submittedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         answers: [
           {
-            questionId: { type: mongoose.Schema.Types.ObjectId },
-            answerText: { type: String },
-            answerOptions: { type: [String] },
-            fileUrl: { type: String },
+            questionId: mongoose.Schema.Types.ObjectId,
+            answerText: String,
+            answerOptions: [String],
+            fileData: String,
+            fileName: String,
+            fileType: String,
           },
         ],
       },

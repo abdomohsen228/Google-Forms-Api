@@ -1,8 +1,39 @@
-import { IsArray, IsBoolean, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+  IsObject,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 import { QuestionType } from 'src/database/enums/questoinType.enum';
 
+class QuestionSettings {
+  @IsOptional()
+  @IsNumber()
+  maxLength?: number;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  allowedFileTypes?: string[];
+
+  @IsOptional()
+  @IsNumber()
+  maxFileSizeMB?: number;
+
+  @IsOptional()
+  minDate?: Date;
+
+  @IsOptional()
+  maxDate?: Date;
+}
+
 export class CreateQuestionDto {
-  @IsString()
+  @IsEnum(QuestionType)
   type: QuestionType;
 
   @IsOptional()
@@ -11,17 +42,15 @@ export class CreateQuestionDto {
 
   @IsOptional()
   @IsArray()
+  @IsString({ each: true })
   options?: string[];
 
   @IsOptional()
-  settings?: {
-    maxLength?: number;
-    allowedFileTypes?: string[];
-    maxFileSizeMB?: number;
-    minDate?: Date;
-    maxDate?: Date;
-  };
+  @ValidateNested()
+  @Type(() => QuestionSettings)
+  settings?: QuestionSettings;
 
   @IsOptional()
+  @IsNumber()
   order?: number;
 }
