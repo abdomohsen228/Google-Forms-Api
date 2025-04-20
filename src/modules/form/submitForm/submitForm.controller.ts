@@ -13,7 +13,6 @@ import { AuthGuard } from 'src/modules/auth/guards/auth.guards';
 import { SubmitFormDto } from '../dtos/sunmitForm.dto';
 import { SubmitFormService } from './submitForm.service';
 
-@UseGuards(AuthGuard)
 @Controller('forms')
 export class SubmitformController {
   constructor(private readonly submitformService: SubmitFormService) {}
@@ -30,6 +29,8 @@ export class SubmitformController {
       submitFormDto,
     );
   }
+
+  @UseGuards(AuthGuard)
   @Get(':formId/all-submission')
   public async getAllSubmission(
     @Param('formId') formId: string,
@@ -44,18 +45,8 @@ export class SubmitformController {
       limit,
     );
   }
-  @Get('/submitted-forms')
-  public async getSubmittedForms(
-    @CurrentUser() userPayload: jwtPayload,
-    @Query('page') page?: number,
-    @Query('limit') limit?: number,
-  ) {
-    return this.submitformService.getSubmittedFormsByUser(
-      userPayload,
-      page,
-      limit,
-    );
-  }
+
+  @UseGuards(AuthGuard)
   @Get('created-forms')
   async getCreatedForms(
     @CurrentUser() userPayload: jwtPayload,

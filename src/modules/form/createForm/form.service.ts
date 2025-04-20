@@ -11,6 +11,7 @@ import { CreateFormDto } from '../dtos/createForm.dto';
 import { UpdateFormDto } from '../dtos/updateForm.dto';
 import successMessage from 'src/config/successMessages.json';
 import errorMessages from 'src/config/errorMessages.json';
+import { QuestionType } from 'src/database/enums/questoinType.enum';
 
 @Injectable()
 export class FormService {
@@ -18,10 +19,25 @@ export class FormService {
 
   async createForm(userPayload: jwtPayload, createFormDto: CreateFormDto) {
     try {
+      const emailQuestion = {
+        type: QuestionType.SHORT_TEXT,
+        isRequired: true,
+        options: [],
+        settings: {},
+        order: 0,
+      };
+
+      const updatedQuestions = createFormDto.questions.map((q, index) => ({
+        ...q,
+        order: index + 1,
+      }));
+
       const form = new this.formModel({
         ...createFormDto,
+        questions: [emailQuestion, ...updatedQuestions],
         ownerId: userPayload.id,
       });
+
       await form.save();
       return { message: successMessage.form.success_create, form };
     } catch (error) {

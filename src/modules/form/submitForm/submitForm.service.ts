@@ -27,8 +27,14 @@ export class SubmitFormService {
     if (!form)
       throw new NotFoundException(errorMessages.form_errors.form_not_found);
 
+    const emailAnswer = submitFormDto.answers[0]?.answerText;
+    if (!emailAnswer) {
+      throw new BadRequestException('Email is required as the first question.');
+    }
+
     const alreadySubmitted = form.submissions.some(
-      (submission) => submission.submittedBy.toString() === userPayload.id,
+      (submission) =>
+        submission.submittedBy.toLowerCase() === emailAnswer.toLowerCase(),
     );
 
     if (alreadySubmitted) {
@@ -74,11 +80,13 @@ export class SubmitFormService {
     }));
 
     form.submissions.push({
-      submittedBy: new Types.ObjectId(userPayload.id),
+      submittedBy: emailAnswer,
       submittedAt: new Date(),
       answers: submissionAnswers,
     });
+
     await form.save();
+
     return {
       message: successMessage.form.success_submission,
     };
@@ -92,10 +100,7 @@ export class SubmitFormService {
   ) {
     const skip = (page - 1) * limit;
 
-    const form = await this.formModel
-      .findById(formId)
-      .populate('submissions.submittedBy', 'email');
-
+    const form = await this.formModel.findById(formId);
     if (!form) {
       throw new NotFoundException(errorMessages.form_errors.form_not_found);
     }
@@ -109,7 +114,7 @@ export class SubmitFormService {
     const paginatedSubmissions = form.submissions
       .slice(skip, skip + limit)
       .map((submission) => ({
-        submittedBy: submission.submittedBy.email,
+        submittedBy: submission.submittedBy,
         submittedAt: submission.submittedAt,
         answers: submission.answers.map((ans) => ({
           questionId: ans.questionId,
@@ -132,54 +137,6 @@ export class SubmitFormService {
     };
   }
 
-  async getSubmittedFormsByUser(
-    userPayload: jwtPayload,
-    page: number = 1,
-    limit: number = 5,
-  ) {
-    const skip = (page - 1) * limit;
-    const matchQuery = {
-      submissions: {
-        $elemMatch: { submittedBy: new Types.ObjectId(userPayload.id) },
-      },
-    };
-    const forms = await this.formModel
-      .find(matchQuery)
-      .skip(skip)
-      .limit(limit)
-      .select('title description submissions');
-
-    const totalForms = await this.formModel.countDocuments(matchQuery);
-
-    const formattedForms = forms.map((form) => {
-      const submission = form.submissions.find((s) =>
-        s.submittedBy.equals(userPayload.id),
-      );
-      return {
-        title: form.title,
-        description: form.description,
-        submittedAt: submission?.submittedAt,
-        answers: submission?.answers.map((ans) => ({
-          questionId: ans.questionId,
-          answerText: ans.answerText,
-          answerOptions: ans.answerOptions,
-          ...(ans.fileData && {
-            fileData: ans.fileData,
-            fileName: ans.fileName,
-            fileType: ans.fileType,
-          }),
-        })),
-      };
-    });
-
-    return {
-      submittedForms: formattedForms,
-      page,
-      limit,
-      totalForms,
-      totalPages: Math.ceil(totalForms / limit),
-    };
-  }
   async getCreatedFormsByUser(
     userPayload: jwtPayload,
     page: number = 1,
