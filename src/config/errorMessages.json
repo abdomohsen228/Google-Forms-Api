@@ -21,6 +21,7 @@
       "filed_is_required": "Filed is required for question",
       "answer_submission_failed" : "Invalid answer format",
       "question_not_found": "Question not found",
-      "already_submitted": "You have already submitted this form."
+      "already_submitted": "You have already submitted this form.",
+      "email_is_requierd": "Email is required as the first question"
     }
 }

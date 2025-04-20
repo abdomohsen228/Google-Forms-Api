@@ -21,13 +21,8 @@ export class SubmitformController {
   public submitForm(
     @Param('formId') formId: string,
     @Body() submitFormDto: SubmitFormDto,
-    @CurrentUser() userPayload: jwtPayload,
   ) {
-    return this.submitformService.submitForm(
-      formId,
-      userPayload,
-      submitFormDto,
-    );
+    return this.submitformService.submitForm(formId, submitFormDto);
   }
 
   @UseGuards(AuthGuard)
@@ -40,20 +35,6 @@ export class SubmitformController {
   ) {
     return this.submitformService.getAllSubmissionsForForm(
       formId,
-      userPayload,
-      page,
-      limit,
-    );
-  }
-
-  @UseGuards(AuthGuard)
-  @Get('created-forms')
-  async getCreatedForms(
-    @CurrentUser() userPayload: jwtPayload,
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 5,
-  ) {
-    return this.submitformService.getCreatedFormsByUser(
       userPayload,
       page,
       limit,

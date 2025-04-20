@@ -5,6 +5,9 @@ import { QuestionType } from '../enums/questoinType.enum';
 
 @Schema({ timestamps: true })
 export class Form extends Document {
+  @Prop({ required: true, unique: true })
+  GeneratedFormId: string;
+
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   ownerId: Types.ObjectId;
 
