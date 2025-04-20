@@ -18,6 +18,9 @@
       "form_not_found" : "Form not found. Please check the form ID.",
       "invalid_objectid": "The provided Form ID is not a valid ObjectId.",
       "file_upload_failed": "File upload failed. Please check the file again ",
-      "answer_submission_failed" : "Invalid answer format"
+      "filed_is_required": "Filed is required for question",
+      "answer_submission_failed" : "Invalid answer format",
+      "question_not_found": "Question not found",
+      "already_submitted": "You have already submitted this form."
     }
 }
