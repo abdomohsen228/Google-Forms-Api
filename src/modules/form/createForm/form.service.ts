@@ -82,9 +82,10 @@ export class FormService {
     };
   }
 
-  async getFormById(userPayload: jwtPayload, GeneratedFormId: string) {
-    await this.validateForm(userPayload, GeneratedFormId);
-    const form = await this.validateForm(userPayload, GeneratedFormId);
+  async getFormById(userPayload: jwtPayload, generatedFormId: string) {
+    const form = await this.formModel.findOne({
+      GeneratedFormId: generatedFormId,
+    });
     return form;
   }
 

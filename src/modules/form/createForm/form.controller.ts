@@ -16,10 +16,11 @@ import { CreateFormDto } from '../dtos/createForm.dto';
 import { UpdateFormDto } from '../dtos/updateForm.dto';
 import { AuthGuard } from 'src/modules/auth/guards/auth.guards';
 
-@UseGuards(AuthGuard)
 @Controller('form')
 export class formController {
   constructor(private readonly formService: FormService) {}
+
+  @UseGuards(AuthGuard)
   @Post('')
   public createForm(
     @CurrentUser() userPayload: jwtPayload,
@@ -27,7 +28,7 @@ export class formController {
   ) {
     return this.formService.createForm(userPayload, createFormDto);
   }
-
+  @UseGuards(AuthGuard)
   @Get('')
   public async getForms(
     @CurrentUser() userPayload: jwtPayload,
@@ -45,6 +46,7 @@ export class formController {
     return this.formService.getFormById(userPayload, formId);
   }
 
+  @UseGuards(AuthGuard)
   @Patch(':formId')
   public updateFormById(
     @CurrentUser() userPayload: jwtPayload,
@@ -54,6 +56,7 @@ export class formController {
     return this.formService.updateFormById(userPayload, formId, updateFormDto);
   }
 
+  @UseGuards(AuthGuard)
   @Delete(':formId')
   public deleteFormById(
     @CurrentUser() userPayload: jwtPayload,

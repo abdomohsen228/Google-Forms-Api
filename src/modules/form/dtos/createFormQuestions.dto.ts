@@ -7,6 +7,7 @@ import {
   IsString,
   ValidateNested,
   IsObject,
+  IsNotEmpty,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { QuestionType } from 'src/database/enums/questoinType.enum';
@@ -35,6 +36,10 @@ class QuestionSettings {
 export class CreateQuestionDto {
   @IsEnum(QuestionType)
   type: QuestionType;
+
+  @IsString()
+  @IsNotEmpty()
+  QuestionTitle: string;
 
   @IsOptional()
   @IsBoolean()

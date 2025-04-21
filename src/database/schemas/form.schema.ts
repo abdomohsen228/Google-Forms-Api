@@ -29,6 +29,7 @@ export class Form extends Document {
           required: true,
           enum: Object.values(QuestionType),
         },
+        QuestionTitle: String,
         isRequired: { type: Boolean, default: true },
         options: { type: [String], default: [] },
         settings: {

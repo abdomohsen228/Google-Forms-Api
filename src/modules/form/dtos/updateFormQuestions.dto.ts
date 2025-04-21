@@ -1,10 +1,14 @@
-import { IsArray, IsBoolean, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { QuestionType } from 'src/database/enums/questoinType.enum';
 
 export class UpdateQuestionDto {
   @IsOptional()
   @IsString()
   type?: QuestionType;
+
+  @IsString()
+  @IsNotEmpty()
+  QuestionTitle: string;
 
   @IsOptional()
   @IsBoolean()

@@ -21,9 +21,8 @@ export class CreateFormDto {
   @IsBoolean()
   isPublic?: boolean;
 
-  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateQuestionDto)
-  questions?: CreateQuestionDto[];
+  questions: CreateQuestionDto[];
 }
