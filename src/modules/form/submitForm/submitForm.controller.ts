@@ -25,10 +25,7 @@ export class SubmitformController {
     return this.submitformService.submitForm(formId, submitFormDto);
   }
 
-
-
-
-  
+  //
   @UseGuards(AuthGuard)
   @Get(':formId/all-submission')
   public async getAllSubmission(
