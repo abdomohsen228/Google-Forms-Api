@@ -15,6 +15,7 @@ import { FormService } from './form.service';
 import { CreateFormDto } from '../dtos/createForm.dto';
 import { UpdateFormDto } from '../dtos/updateForm.dto';
 import { AuthGuard } from 'src/modules/auth/guards/auth.guards';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('form')
 export class formController {
@@ -22,6 +23,7 @@ export class formController {
 
   @UseGuards(AuthGuard)
   @Post('')
+  @Throttle({ short: { limit: 3, ttl: 1000 } })
   public createForm(
     @CurrentUser() userPayload: jwtPayload,
     @Body() createFormDto: CreateFormDto,
@@ -36,8 +38,8 @@ export class formController {
     @Query('limit') limit = 2,
   ) {
     return this.formService.getFormsByUser(userPayload, page, limit);
-  }
-
+  } // custom rate limit
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Get(':formId')
   public getFormById(
     @CurrentUser() userPayload: jwtPayload,
