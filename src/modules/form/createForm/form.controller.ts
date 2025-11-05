@@ -28,6 +28,7 @@ export class formController {
   ) {
     return this.formService.createForm(userPayload, createFormDto);
   }
+
   @UseGuards(AuthGuard)
   @Get('')
   public async getForms(

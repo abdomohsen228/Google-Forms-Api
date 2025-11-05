@@ -32,9 +32,10 @@ export class AuthService {
         errorMessages.user_errors.invalid_email_or_password,
       );
     }
+    const userId: string = userObject._id.toString();
 
     const token = this.generateJwt({
-      id: userObject._id.toString(),
+      id: userId,
       username: userObject.username || userObject.email,
     });
 
@@ -46,6 +47,7 @@ export class AuthService {
       },
     };
   }
+
   public async register(
     registerDto: RegisterRequestDto,
   ): Promise<RegisterResponseDto> {
